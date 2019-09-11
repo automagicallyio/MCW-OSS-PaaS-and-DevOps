@@ -4,12 +4,13 @@ on: [push]
 
 jobs:
   build:
+    name: install npm and build
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [10.x]
+        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v1
@@ -17,11 +18,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: npm install, build, and test
+
+    - name: npm install and build
       run: |
-        cd 'Hands-on lab/lab-files'
+        cd "Hands-on lab/lab-files"
         npm install
-        npm run build --if-present
-        npm test
-      env:
-        CI: true
+        npm run build
+
