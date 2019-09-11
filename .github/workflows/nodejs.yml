@@ -40,7 +40,6 @@ jobs:
 
     - name: Run docker build and push
       run: |
-        cd "Hands-on lab/lab-files"
         docker build . -t acrmaxtest.azurecr.io/best-for-you-organics:${{ github.sha }}
         docker push acrmaxtest.azurecr.io/best-for-you-organics:${{ github.sha }}     
      
