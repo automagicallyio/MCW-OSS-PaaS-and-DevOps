@@ -13,6 +13,12 @@ jobs:
         node-version: [10.x]
 
     steps:
+    - name: Azure Login action
+      # Unlike code deployment, you will authenticate using an Azure Service Principal
+      uses: azure/actions/login@master
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -25,3 +31,21 @@ jobs:
         npm install
         npm run build
 
+    - name: Docker Login action
+      uses: azure/container-actions/docker-login@master
+      with:
+        login-server: acrmaxtest.azurecr.io
+        username: acrmaxtest
+        password: ${{ secrets.DOCKER_PASSWORD }}     
+
+    - name: Run docker build and push
+      run: |
+        cd "Hands-on lab/lab-files"
+        docker build . -t acrmaxtest.azurecr.io/best-for-you-organics:${{ github.sha }}
+        docker push acrmaxtest.azurecr.io/best-for-you-organics:${{ github.sha }}     
+     
+    - uses: azure/appservice-actions/webapp-container@master
+      with:
+        app-name: 'best-for-you-app-maxtest2'
+        images: 'acrmaxtest.azurecr.io/best-for-you-organics:latest'
+        
